@@ -16,7 +16,7 @@ const mockRecords = [
     id: "1",
     date: "2024-12-15",
     time: "10:00",
-    service: "Стрижка мужская",
+    service: "Стрижка мужская и женская",
     price: 1200,
     master: "Иван Петров",
   },
