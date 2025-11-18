@@ -52,49 +52,49 @@ export default function MyRecordsScreen({ navigation }) {
     setModalVisible(true);
   };
 
-  // Ошибка 1: Нарушение иммутабельности при удалении записи
-  const confirmCancel = () => {
-    if (!cancelReason.trim()) {
-      Alert.alert("Ошибка", "Пожалуйста, укажите причину отмены");
-      return;
-    }
-    // Ошибоный mutate: костыль — напрямую мутируем массив
-    records.splice(records.findIndex((r) => r.id === selectedRecord.id), 1);
-    setRecords(records);
-    setModalVisible(false);
-    setCancelReason("");
-    setSelectedRecord(null);
-    Alert.alert("Успех", "Запись отменена");
-  };
+  // Исправление 1 - иммутабельность
+const confirmCancel = () => {
+  if (!cancelReason.trim()) {
+    Alert.alert("Ошибка", "Пожалуйста, укажите причину отмены");
+    return;
+  }
+  setRecords(records.filter((r) => r.id !== selectedRecord.id));
+  setModalVisible(false);
+  setCancelReason("");
+  setSelectedRecord(null);
+  Alert.alert("Успех", "Запись отменена");
+};
 
-  const handleReschedule = (record) => {
-    setSelectedRecord(record);
-    setRescheduleModalVisible(true);
-  };
+// Исправление 2 - консистентные имена
+const confirmReschedule = () => {
+  if (!selectedDate || !selectedTime) {
+    Alert.alert("Ошибка", "Пожалуйста, выберите дату и время");
+    return;
+  }
+  const updatedRecords = records.map((record) =>
+    record.id === selectedRecord.id
+      ? {
+          ...record,
+          date: selectedDate,
+          time: selectedTime,
+        }
+      : record
+  );
+  setRecords(updatedRecords);
+  setRescheduleModalVisible(false);
+  setSelectedRecord(null);
+  setSelectedDate(null);
+  setSelectedTime(null);
+  Alert.alert("Успех", "Запись перенесена");
+};
 
-  // Ошибка 2: Неконсистентные названия переменных
-  const confirmReschedule = () => {
-    if (!selectedDate || !selectedTime) {
-      Alert.alert("Ошибка", "Пожалуйста, выберите дату и время");
-      return;
-    }
-    // Промах с именем переменной data
-    const updatedData = records.map((rec) =>
-      rec.id === selectedRecord.id
-        ? {
-            ...rec,
-            date: selectedDate,
-            time: selectedTime,
-          }
-        : rec
-    );
-    setRecords(updatedData);
-    setRescheduleModalVisible(false);
-    setSelectedRecord(null);
-    setSelectedDate(null);
-    setSelectedTime(null);
-    Alert.alert("Успех", "Запись перенесена");
-  };
+// Исправление 3 - корректный ключ
+{records.map((record) => (
+  <View key={record.id} style={styles.recordCard}>
+    <Text>{record.service}</Text>
+  </View>
+))}
+
 
   const availableTimes = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
