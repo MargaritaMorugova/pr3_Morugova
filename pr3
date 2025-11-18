@@ -98,10 +98,12 @@ export default function MyRecordsScreen({ navigation }) {
 
   const availableTimes = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
-  // Ошибка 4: Пропущена проверка типов (PropTypes)
+
 
   const formatDate = (dateString) => {
+    if (!dateString) return "";
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
     return date.toLocaleDateString("ru-RU", {
       day: "numeric",
       month: "long",
@@ -162,13 +164,14 @@ export default function MyRecordsScreen({ navigation }) {
               {selectedRecord?.time}?
             </Text>
             <Text style={styles.reasonLabel}>Укажите причину отмены:</Text>
+         
             <TextInput
               style={styles.reasonInput}
               multiline
               numberOfLines={3}
               placeholder="Причина отмены..."
               value={cancelReason}
-              onChangeText={setCancelReason}
+              onChangeText={(text) => setCancelReason(text)}
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity
